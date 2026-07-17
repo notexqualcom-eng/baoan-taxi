@@ -1,0 +1,3224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bảo An Taxi - Premium Ride Booking</title>
+  
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- SweetAlert2 & QRious -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+  <style>
+    /* DESIGN SYSTEM TOKEN & RESET */
+    :root {
+      --bg: #F4F6F8;
+      --card: #FFFFFF;
+      --primary: #059669; /* Emerald Green (Teal-ish Green like Green SM) */
+      --primary-hover: #047857;
+      --primary-soft: rgba(5, 150, 105, 0.06);
+      --primary-glow: rgba(5, 150, 105, 0.15);
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --border: rgba(226, 232, 240, 0.8);
+      --danger: #EF4444;
+      --success: #10B981;
+      --voucher-gold: #D4AF37;
+      --fomo-red: #EF4444;
+      --gray-light: #F1F5F9;
+      --gray-bg: #F8FAFC;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.02);
+      --shadow-md: 0 10px 30px -5px rgba(0, 0, 0, 0.03), 0 5px 15px -3px rgba(0, 0, 0, 0.02);
+      --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.04), 0 10px 20px -5px rgba(0, 0, 0, 0.02);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', 'Inter', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: -0.015em;
+    }
+
+    body {
+      background-color: #E2E8F0;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-y: auto;
+    }
+
+    /* SWITCHER BANNER */
+    .switcher-banner {
+      width: 100%;
+      background: #1E293B;
+      border-bottom: 2px solid var(--primary);
+      padding: 10px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .switcher-banner a {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 0.2s;
+    }
+    .switcher-banner a.active {
+      color: #FFFFFF;
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* APP CONTAINER - MOBILE SCALED */
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg);
+      min-height: calc(100vh - 42px);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* MINI HEADER */
+    .mini-header {
+      background: var(--card);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 42px; /* Dưới switcher */
+      z-index: 999;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      width: 36px;
+      height: 36px;
+      background: #FBBF24;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+    }
+
+    .logo-badge i {
+      font-size: 18px;
+      color: #000000;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.03em;
+    }
+
+    .brand-title span {
+      color: var(--primary);
+    }
+
+    .btn-call-quick {
+      background: var(--primary-soft);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(5, 150, 105, 0.1);
+    }
+
+    .btn-call-quick:active {
+      transform: scale(0.95);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* TẦNG 1: HERO CAROUSEL */
+    .hero-carousel {
+      width: 100%;
+      height: 220px;
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+
+    .hero-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .carousel-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: 28px;
+      position: relative;
+    }
+
+    .slide-welcome {
+      background: linear-gradient(135deg, #047857 0%, #059669 100%);
+      color: #FFFFFF;
+    }
+
+    .slide-guide {
+      background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+      color: #FFFFFF;
+    }
+
+    .slide-action {
+      background: linear-gradient(135deg, #78350F 0%, #D97706 100%);
+      color: #FFFFFF;
+    }
+
+    .slide-title {
+      font-size: 1.75rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+
+    .slide-desc {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* Premium custom guide list styling */
+    .guide-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .guide-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .step-txt {
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0.95;
+      line-height: 1.3;
+    }
+
+    .slide-action-btns {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+      width: 100%;
+    }
+
+    .slide-action-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .slide-action-card:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .slide-action-card i {
+      font-size: 20px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .slide-action-card div {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Carousel Indicators */
+    .carousel-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: -20px;
+      margin-bottom: 20px;
+      z-index: 10;
+      position: relative;
+    }
+
+    .indicator-dot {
+      width: 6px;
+      height: 6px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .indicator-dot.active {
+      width: 16px;
+      border-radius: 3px;
+      background: var(--primary);
+    }
+
+    /* UNIFIED PREMIUM SECTION CONTAINER */
+    .section-box {
+      background: var(--card);
+      border-radius: 24px;
+      margin: 0 16px 16px 16px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    /* Styled icon badge (Green SM style) */
+    .icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .icon-badge-emerald { background: rgba(5, 150, 105, 0.08); color: var(--primary); }
+    .icon-badge-blue { background: rgba(59, 130, 246, 0.08); color: #3B82F6; }
+    .icon-badge-orange { background: rgba(245, 158, 11, 0.08); color: #F59E0B; }
+
+    /* INPUT STYLING (Green SM style inputs) */
+    .phone-input-group {
+      position: relative;
+      margin-bottom: 14px;
+      width: 100%;
+    }
+
+    .phone-input-group input {
+      width: 100%;
+      padding: 16px 16px 16px 48px;
+      border-radius: 16px;
+      border: 1.5px solid #E2E8F0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      background: var(--gray-bg);
+      transition: all 0.25s ease;
+      color: var(--text);
+    }
+
+    .phone-input-group input:focus {
+      border-color: var(--primary);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .phone-input-group i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .voucher-action-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .btn-spin-action {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: #FFFFFF;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2);
+      transition: all 0.2s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-spin-action:active {
+      transform: scale(0.96);
+    }
+
+    .btn-wallet-action {
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 6px 16px var(--primary-glow);
+      transition: all 0.2s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-wallet-action:active {
+      transform: scale(0.96);
+    }
+
+    .fomo-banner {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px dashed rgba(239, 68, 68, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.8rem;
+      color: #DC2626;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 14px;
+      line-height: 1.4;
+    }
+
+    /* VOUCHER WALLET CONTAINER */
+    .wallet-container {
+      border-top: 1px dashed #E2E8F0;
+      margin-top: 20px;
+      padding-top: 20px;
+    }
+
+    .wallet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .wallet-username {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .wallet-username span {
+      color: var(--primary);
+    }
+
+    .wallet-tabs {
+      display: flex;
+      background: var(--gray-light);
+      padding: 4px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+
+    .wallet-tab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .wallet-tab.active {
+      background: #FFFFFF;
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .voucher-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .voucher-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .voucher-list::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.08);
+      border-radius: 4px;
+    }
+
+    /* VOUCHER CARD STYLED AS PREMIUM TICKET */
+    .voucher-item {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .voucher-item.active-theme {
+      border-color: var(--voucher-gold);
+      background: linear-gradient(180deg, #FFFDF9 0%, #FFFFFF 100%);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.05);
+    }
+
+    .voucher-item.used-expired {
+      opacity: 0.55;
+      filter: grayscale(1);
+    }
+
+    .voucher-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .voucher-icon {
+      width: 48px;
+      height: 48px;
+      background: #FFFDF0;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #D97706;
+      flex-shrink: 0;
+    }
+
+    .voucher-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .voucher-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .voucher-badge {
+      display: inline-flex;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-new { background: #FEE2E2; color: #EF4444; }
+    .badge-pending { background: #DBEAFE; color: #2563EB; }
+    .badge-ready { background: #D1FAE5; color: #059669; }
+
+    .voucher-countdown {
+      font-size: 0.8rem;
+      color: #EF4444;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    .voucher-action-row {
+      margin-top: 12px;
+      border-top: 1.5px dashed var(--border);
+      padding-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-voucher-action {
+      border: none;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-voucher-action.activate {
+      background: #2563EB;
+      color: #FFFFFF;
+    }
+
+    .btn-voucher-action.use {
+      background: #1E293B;
+      color: #FFFFFF;
+    }
+
+    /* WHEEL MODAL STYLE */
+    .wheel-modal-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px 0;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      margin: 20px auto;
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 28px solid #1E293B;
+      z-index: 10;
+    }
+
+    .wheel-canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid #FBBF24;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      transition: transform 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    /* TẦNG 3: BOOKING TABS (Premium Segment Control like Green SM) */
+    .booking-tabs {
+      display: flex;
+      background: var(--gray-light);
+      padding: 4px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .booking-tab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 14px 6px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .booking-tab.active {
+      background: #FFFFFF;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* TAB CONTENT: BAO CHUYẾN */
+    .direction-toggle {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .btn-direction {
+      flex: 1;
+      border: 1.5px solid #E2E8F0;
+      background: transparent;
+      padding: 11px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-direction.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    /* ATADI ROUTE SELECTION (Unified Clean Interface) */
+    .route-selection-container {
+      background: var(--gray-bg);
+      border: 1.5px solid #E2E8F0;
+      border-radius: 20px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .route-selection-block {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      padding-right: 52px; /* Leave space for swap button to prevent text wrapping */
+    }
+
+    .route-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+      white-space: nowrap;
+    }
+
+    .route-val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .route-divider {
+      height: 1px;
+      background: #E2E8F0;
+      width: 100%;
+    }
+
+    .btn-route-swap {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+
+    .btn-route-swap i {
+      color: var(--primary);
+      font-size: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-route-swap:active {
+      transform: translateY(-50%) scale(0.9);
+    }
+
+    /* CUSTOM DETAIL ADDRESS INPUTS */
+    .detail-address-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .detail-address-group input {
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1.5px solid #E2E8F0;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+      background: var(--gray-bg);
+      font-weight: 600;
+    }
+
+    .detail-address-group input:focus {
+      border-color: var(--primary);
+      background: #FFFFFF;
+    }
+
+    /* KM COUNTER (Redesigned vertically to prevent text wrapping) */
+    .km-counter-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+      background: var(--gray-bg);
+      padding: 16px;
+      border-radius: 20px;
+      border: 1.5px solid #E2E8F0;
+    }
+
+    .km-lbl {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .km-input-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* Spread controls nicely */
+      width: 100%;
+    }
+
+    .btn-km-step {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1.5px solid #CBD5E1;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 1.25rem;
+      transition: all 0.1s ease;
+      user-select: none;
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-km-step:active {
+      background: var(--gray-light);
+      transform: scale(0.92);
+    }
+
+    .km-input-wrapper input {
+      width: 80px;
+      text-align: center;
+      border: none;
+      background: transparent;
+      font-size: 1.6rem;
+      font-weight: 900;
+      outline: none;
+      color: var(--text);
+    }
+
+    .km-value-container {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .km-unit {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--text);
+    }
+
+    /* PRICE RESULTS PANELS (Redesigned vertically to prevent badge truncation) */
+    .price-results-panel {
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.03) 0%, rgba(5, 150, 105, 0.07) 100%);
+      border: 1.5px dashed rgba(5, 150, 105, 0.25);
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      box-shadow: inset 0 2px 6px rgba(5, 150, 105, 0.01);
+    }
+
+    .price-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      width: 100%;
+    }
+
+    .price-row-lbl {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .price-row.highlight {
+      border-top: 1px dashed rgba(5, 150, 105, 0.15);
+      border-bottom: 1px dashed rgba(5, 150, 105, 0.15);
+      padding: 10px 0;
+      margin: 2px 0;
+    }
+
+    .price-row.highlight .price-row-lbl {
+      color: var(--text);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .price-row-val.market {
+      text-decoration: line-through;
+      color: #94A3B8;
+      font-weight: 600;
+    }
+
+    .price-row-val.baoan {
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: var(--primary);
+    }
+
+    .saving-badge {
+      background: var(--primary);
+      color: #FFFFFF;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.15);
+      white-space: nowrap;
+    }
+
+    /* TAB CONTENT: XE GHÉP */
+    .date-scroller-wrapper {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .date-scroller {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
+    }
+
+    .date-scroller::-webkit-scrollbar {
+      display: none;
+    }
+
+    .date-item {
+      flex: 0 0 72px;
+      height: 78px;
+      background: var(--gray-bg);
+      border: 1.5px solid #E2E8F0;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      scroll-snap-align: start;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .date-item.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 6px 16px var(--primary-glow);
+    }
+
+    .date-item-day {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      opacity: 0.8;
+    }
+
+    .date-item-num {
+      font-size: 1.35rem;
+      font-weight: 900;
+      margin-top: 3px;
+    }
+
+    .date-item-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--primary);
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+
+    .date-item.active .date-item-dot {
+      background: #FFFFFF;
+    }
+
+    .sync-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      padding: 0 4px;
+      font-weight: 600;
+    }
+
+    .sync-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sync-badge i.rotating {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .trip-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Xe Ghép Trip Card */
+    .trip-card {
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .trip-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--primary);
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+    }
+
+    .trip-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .trip-time-tag {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .trip-car-tag {
+      font-size: 0.75rem;
+      background: var(--gray-light);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .trip-route {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .trip-route-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .trip-route-step i {
+      color: var(--primary);
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+    }
+
+    .trip-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      border-top: 1.5px solid var(--gray-light);
+      padding-top: 12px;
+    }
+
+    .trip-price {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .trip-price-lbl {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .trip-price-val {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .seats-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-soft);
+      border: 1px solid rgba(5, 150, 105, 0.1);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .seats-badge.full {
+      background: #FEE2E2;
+      border-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+
+    .seats-dot-indicator {
+      display: flex;
+      gap: 3px;
+    }
+
+    .seat-indicator-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .seat-indicator-dot.taken {
+      background: #CBD5E1;
+    }
+
+    .btn-trip-book {
+      width: 100%;
+      border: none;
+      background: var(--primary);
+      color: #FFFFFF;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn-trip-book:active {
+      transform: scale(0.97);
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 36px;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+
+    /* FOOTER */
+    .app-footer {
+      text-align: center;
+      padding: 28px 20px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+      background: #FFFFFF;
+    }
+
+    /* PERSISTENT FLOATING ACTION BUTTONS */
+    .fab-container {
+      position: fixed;
+      bottom: 24px;
+      right: calc(50% - 220px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 99;
+    }
+
+    @media (max-width: 480px) {
+      .fab-container {
+        right: 20px;
+      }
+      .section-box {
+        margin: 0 12px 12px 12px;
+        padding: 20px 14px;
+        border-radius: 20px;
+      }
+      .bottom-sheet {
+        padding: 20px 16px 44px 16px;
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+      }
+    }
+
+    .fab-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
+      font-size: 22px;
+    }
+
+    .fab-btn:active {
+      transform: scale(0.9);
+    }
+
+    .fab-zalo {
+      background: #0068FF;
+    }
+
+    .fab-phone {
+      background: #10B981;
+    }
+
+    /* BOTTOM SHEET DIALOGS (Highly native iOS style) */
+    .bottom-sheet-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 9999;
+    }
+
+    .bottom-sheet-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .bottom-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translate(-50%, 100%);
+      width: 100%;
+      max-width: 480px;
+      background: #FFFFFF;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      box-shadow: 0 -12px 35px rgba(0,0,0,0.12);
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 10000;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px 24px 48px 24px;
+    }
+
+    .bottom-sheet.open {
+      transform: translate(-50%, 0);
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 5px;
+      background: #E2E8F0;
+      border-radius: 3px;
+      margin: -10px auto 18px auto;
+    }
+
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .sheet-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .sheet-close-btn {
+      border: none;
+      background: var(--gray-light);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .sheet-close-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* LOCATION SELECTION LIST */
+    .location-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .location-option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: var(--gray-bg);
+      border-radius: 16px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .location-option:active {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .location-option i {
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .location-option:active i {
+      color: var(--primary);
+    }
+
+    /* DETAILED 3D-EFFECT CAR SEAT GRID (Highly polished) */
+    .seat-map-wrapper {
+      background: var(--gray-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.01);
+    }
+
+    .seat-map-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .seat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 50px);
+      gap: 20px 24px;
+      justify-content: center;
+      padding: 10px 0;
+    }
+
+    /* Premium car seat shape design with headrest */
+    .seat-item {
+      position: relative;
+      width: 48px;
+      height: 52px;
+      background: #E2E8F0;
+      border-radius: 12px 12px 16px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #64748B;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    /* Seat Headrest component */
+    .seat-item::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      width: 20px;
+      height: 8px;
+      background: inherit;
+      border-radius: 4px;
+      border: 2.5px solid transparent;
+      border-bottom: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .seat-item.driver {
+      border: 1.5px dashed #CBD5E1;
+      color: #94A3B8;
+      cursor: not-allowed;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .seat-item.driver::before {
+      display: none;
+    }
+
+    .seat-item.vacant {
+      background: var(--primary-soft);
+      border-color: rgba(5, 150, 105, 0.2);
+      color: var(--primary);
+    }
+
+    .seat-item.vacant::before {
+      background: var(--primary-soft);
+      border-color: rgba(5, 150, 105, 0.2);
+    }
+
+    .seat-item.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 6px 16px var(--primary-glow);
+    }
+
+    .seat-item.selected::before {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .seat-item.taken {
+      background: #F1F5F9;
+      color: #94A3B8;
+      cursor: not-allowed;
+    }
+
+    .seat-item.taken::before {
+      background: #F1F5F9;
+    }
+
+    .seat-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+    }
+
+    /* SEGMENTS SELECTOR */
+    .segment-picker {
+      margin-bottom: 16px;
+    }
+
+    .segment-picker label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .segment-select-display {
+      background: var(--gray-bg);
+      border: 1.5px solid #E2E8F0;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .segment-menu {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 14px;
+      margin-top: 6px;
+      max-height: 190px;
+      overflow-y: auto;
+      box-shadow: var(--shadow-md);
+    }
+
+    .segment-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .segment-option:hover {
+      background: var(--gray-light);
+    }
+
+    .segment-option.selected {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .segment-price {
+      background: var(--primary-soft);
+      color: var(--primary);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+    }
+
+    .segment-option.selected .segment-price {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    /* DIALOG INFO BLOCK */
+    .trip-summary-box {
+      background: var(--gray-bg);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      border: 1px solid var(--border);
+    }
+
+    /* PRIMARY CTA BOOKING BUTTON */
+    .btn-booking-submit {
+      width: 100%;
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px var(--primary-glow);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.02em;
+      margin-top: 14px;
+      margin-bottom: 10px;
+    }
+
+    .btn-booking-submit:active {
+      transform: scale(0.97);
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- APP HOLDER -->
+  <div class="app-container">
+    
+    <!-- SWITCHER BANNER -->
+    <div class="switcher-banner">
+      <a href="private_theme_gold_9x2s8q.html">Mẫu A</a>
+      <a href="private_theme_slate_7f3w1k.html">Mẫu B</a>
+      <a href="private_theme_emerald_4z8v9y.html">Mẫu C</a>
+      <a href="demo.html" class="active">Bản Demo</a>
+    </div>
+
+    <!-- MINI HEADER -->
+    <div class="mini-header">
+      <div class="brand-logo-container">
+        <div class="logo-badge">
+          <i class="fas fa-taxi"></i>
+        </div>
+        <div class="brand-title">BẢO AN <span>TAXI</span></div>
+      </div>
+      <a href="tel:0915745030" class="btn-call-quick">
+        <i class="fas fa-phone-alt animate-pulse"></i> Gọi ngay
+      </a>
+    </div>
+
+    <!-- TẦNG 1: HERO WELCOME CAROUSEL -->
+    <div class="hero-carousel" id="hero-carousel">
+      <!-- Slide 1 -->
+      <div class="carousel-slide slide-welcome">
+        <div class="slide-title">Mỗi ngày cùng Bảo An Taxi</div>
+        <div class="slide-desc">Đồng hành trên mọi chuyến đi xe riêng & xe ghép khu vực Đam Rông, Lâm Hà, Đức Trọng, Đà Lạt và các sân bay liên tỉnh.</div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="carousel-slide slide-guide">
+        <div class="slide-title">Hướng Dẫn Nhanh</div>
+        <div class="guide-steps">
+          <div class="guide-step">
+            <span class="step-num">1</span>
+            <span class="step-txt">Nhập số điện thoại săn voucher giờ vàng</span>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">2</span>
+            <span class="step-txt">Chọn dịch vụ xe mong muốn ở tầng dưới</span>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">3</span>
+            <span class="step-txt">Báo địa điểm và sẵn sàng lên đường!</span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="carousel-slide slide-action">
+        <div class="slide-title">Bắt Đầu Đặt Xe</div>
+        <div class="slide-desc">Lựa chọn dịch vụ đặt chuyến đi phù hợp với bạn:</div>
+        <div class="slide-action-btns">
+          <div class="slide-action-card" onclick="scrollToBookingTab('bao-chuyen')">
+            <i class="fas fa-car"></i>
+            <div>Bao Chuyến</div>
+          </div>
+          <div class="slide-action-card" onclick="scrollToBookingTab('xe-ghep')">
+            <i class="fas fa-users"></i>
+            <div>Xe Ghép</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAROUSEL INDICATORS -->
+    <div class="carousel-indicators">
+      <div class="indicator-dot active"></div>
+      <div class="indicator-dot"></div>
+      <div class="indicator-dot"></div>
+    </div>
+
+    <!-- TẦNG 2: VOUCHER & FOMO ZONE -->
+    <div class="section-box" id="voucher-section">
+      <div class="section-title">
+        <div class="icon-badge icon-badge-orange"><i class="fas fa-gift"></i></div>
+        <span>Ưu Đãi & Voucher Giờ Vàng</span>
+      </div>
+      
+      <div class="phone-input-group">
+        <input type="tel" id="inp-voucher-phone" placeholder="Nhập SĐT nhận voucher của bạn..." oninput="cleanPhoneInput('inp-voucher-phone')">
+        <i class="fas fa-phone"></i>
+      </div>
+
+      <div class="voucher-action-grid">
+        <button onclick="handleVoucherAction('SPIN')" class="btn-spin-action" id="btn-spin">
+          <i class="fas fa-gift"></i> SĂN VÉ GIỜ VÀNG
+        </button>
+        <button onclick="handleVoucherAction('WALLET')" class="btn-wallet-action" id="btn-wallet">
+          <i class="fas fa-wallet"></i> VÍ CỦA TÔI
+        </button>
+      </div>
+
+      <div class="fomo-banner">
+        <i class="fas fa-clock animate-pulse"></i> Ưu đãi giờ vàng có hạn. Kích hoạt voucher ngay trước khi hệ thống ngưng phát hành!
+      </div>
+
+      <!-- WALLET CONTAINER (HIDDEN UNTIL LOGIN) -->
+      <div class="wallet-container" id="wallet-box" style="display: none;">
+        <div class="wallet-header">
+          <div class="wallet-username">Xin chào: <span id="lbl-wallet-user">Khách hàng</span></div>
+        </div>
+
+        <div class="wallet-tabs">
+          <button onclick="switchWalletTab('ACTIVE')" class="wallet-tab active" id="tab-wallet-active">Sẵn sàng</button>
+          <button onclick="switchWalletTab('USED')" class="wallet-tab" id="tab-wallet-used">Đã dùng</button>
+          <button onclick="switchWalletTab('EXPIRED')" class="wallet-tab" id="tab-wallet-expired">Hết hạn</button>
+        </div>
+
+        <div class="voucher-list" id="voucher-list-container">
+          <!-- Voucher cards will render here dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TẦNG 3: BOOKING SERVICES -->
+    <div class="section-box" id="booking-section">
+      <div class="booking-tabs">
+        <button class="booking-tab active" id="tab-btn-bao-chuyen" onclick="switchBookingTab('bao-chuyen')">
+          <i class="fas fa-car"></i> BAO CHUYẾN
+        </button>
+        <button class="booking-tab" id="tab-btn-xe-ghep" onclick="switchBookingTab('xe-ghep')">
+          <i class="fas fa-users"></i> XE GHÉP
+        </button>
+      </div>
+
+      <!-- BAO CHUYẾN CONTENT -->
+      <div id="booking-bao-chuyen-panel">
+        <div class="direction-toggle">
+          <button class="btn-direction active" id="btn-dir-one" onclick="setTripMode('one')">Một chiều</button>
+          <button class="btn-direction" id="btn-dir-round" onclick="setTripMode('round')">Khứ hồi</button>
+        </div>
+
+        <!-- ATADI STYLE INTERFACE -->
+        <div class="route-selection-container">
+          <div class="route-selection-block" onclick="openLocationPicker('pickup')">
+            <span class="route-lbl">Điểm đón</span>
+            <span class="route-val" id="lbl-pickup">Đam Rông</span>
+          </div>
+          <div class="route-divider"></div>
+          <div class="route-selection-block" onclick="openLocationPicker('dropoff')">
+            <span class="route-lbl">Điểm đến</span>
+            <span class="route-val" id="lbl-dropoff">Đà Lạt</span>
+          </div>
+          <button class="btn-route-swap" onclick="swapLocations()">
+            <i class="fas fa-exchange-alt"></i>
+          </button>
+        </div>
+
+        <!-- DETAILED ADDRESS INPUTS -->
+        <div class="detail-address-group">
+          <input type="text" id="inp-pickup-detail" placeholder="Nhập địa điểm đón cụ thể (Số nhà, tên đường...)">
+          <input type="text" id="inp-dropoff-detail" placeholder="Địa chỉ trả cụ thể (Tùy chọn)...">
+        </div>
+
+        <!-- DISTANCE SELECTOR -->
+        <div class="km-counter-box">
+          <div class="km-lbl">
+            <i class="fas fa-route" style="color: var(--primary);"></i>
+            <span>Quãng đường (ước tính)</span>
+          </div>
+          <div class="km-input-wrapper" style="justify-content: center; align-items: center; display: flex;">
+            <button class="btn-km-step" onclick="adjustKm(-5)">-</button>
+            <div class="km-value-container" style="display: flex; align-items: baseline; margin: 0 15px;">
+              <input type="number" id="inp-km" value="80" min="1" oninput="calculateBaoChuyenPrice()" style="width: 60px; text-align: center; border: none; font-weight: 800; font-size: 1.25rem;">
+              <span class="km-unit" style="font-weight: 800; font-size: 1.25rem;">km</span>
+            </div>
+            <button class="btn-km-step" onclick="adjustKm(5)">+</button>
+          </div>
+        </div>
+
+        <!-- DATE SELECTOR -->
+        <div class="phone-input-group">
+          <input type="datetime-local" id="inp-bao-chuyen-datetime">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+
+        <!-- PRICING DISPLAY CARD (Redesigned vertically to prevent truncation) -->
+        <div class="price-results-panel" id="bao-chuyen-price-panel">
+          <div class="price-list">
+            <div class="price-row">
+              <span class="price-row-lbl">Giá thị trường</span>
+              <span class="price-row-val market" id="lbl-price-market">0đ</span>
+            </div>
+            <div class="price-row highlight">
+              <span class="price-row-lbl">Giá Bảo An Taxi</span>
+              <span class="price-row-val baoan" id="lbl-price-baoan">0đ</span>
+            </div>
+            <div class="price-row">
+              <span class="price-row-lbl">Khoản tiết kiệm</span>
+              <span class="saving-badge" id="lbl-price-saving">0đ</span>
+            </div>
+          </div>
+          <div style="font-size:0.75rem; text-align:center; color:var(--text-muted); margin-top:12px; font-weight:600;">
+            * Đơn giá chặng dài siêu ưu đãi bằng xe VinFast VF5
+          </div>
+        </div>
+
+        <!-- PHONE NUMBER & CTA -->
+        <div class="phone-input-group">
+          <input type="tel" id="inp-bao-chuyen-phone" placeholder="Số điện thoại của bạn..." oninput="cleanPhoneInput('inp-bao-chuyen-phone')">
+          <i class="fas fa-phone"></i>
+        </div>
+
+        <button class="btn-booking-submit" onclick="submitBaoChuyen()">
+          <i class="fas fa-paper-plane"></i> XÁC NHẬN ĐẶT XE
+        </button>
+      </div>
+
+      <!-- XE GHÉP CONTENT -->
+      <div id="booking-xe-ghep-panel" style="display: none;">
+        <!-- Date Horizontal selector -->
+        <div class="date-scroller-wrapper">
+          <div class="date-scroller" id="carpool-date-scroller">
+            <!-- Render dates dynamically -->
+          </div>
+        </div>
+
+        <div class="sync-status-bar">
+          <div class="sync-badge">
+            <i class="fas fa-sync rotating" id="sync-icon"></i>
+            <span id="sync-text">Đang đồng bộ Sheets...</span>
+          </div>
+          <div>Lịch trình chạy thực tế</div>
+        </div>
+
+        <!-- CARPOOL LIST -->
+        <div class="trip-list" id="carpool-trip-list">
+          <!-- Render dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- APP FOOTER -->
+    <div class="app-footer">
+      <p style="font-weight: 900; font-size: 0.9rem; margin-bottom: 6px; color: var(--text);">BẢO AN PREMIER TAXI</p>
+      <p style="margin-bottom: 4px;">Dịch vụ xe riêng & xe ghép chất lượng cao</p>
+      <p style="color: var(--text-muted); font-size: 0.75rem;">Phiên bản v12.0.0 Premium • Bàn giao 2026</p>
+    </div>
+
+    <!-- FAB ACTIONS -->
+    <div class="fab-container">
+      <a href="https://zalo.me/0915745030" target="_blank" class="fab-btn fab-zalo">
+        <i class="fas fa-comment-dots"></i>
+      </a>
+      <a href="tel:0915745030" class="fab-btn fab-phone">
+        <i class="fas fa-phone-alt"></i>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- OVERLAYS & BOTTOM SHEETS -->
+  <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closeAllBottomSheets()"></div>
+
+  <!-- BOTTOM SHEET: LOCATION PICKER -->
+  <div class="bottom-sheet" id="sheet-location-picker">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="location-picker-title">Chọn địa điểm</div>
+      <button class="sheet-close-btn" onclick="closeBottomSheet('sheet-location-picker')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="location-list" id="location-list-container">
+      <!-- Options rendered dynamically -->
+    </div>
+  </div>
+
+  <!-- BOTTOM SHEET: QR CODE DISPLAY -->
+  <div class="bottom-sheet" id="sheet-qr-code">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">Voucher Sẵn Sàng</div>
+      <button class="sheet-close-btn" onclick="closeBottomSheet('sheet-qr-code')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div style="text-align: center; padding: 10px 0;">
+      <div style="display:inline-flex; align-items:center; gap:6px; background:#D1FAE5; color:#059669; padding:8px 16px; border-radius:50px; font-weight:700; font-size:0.8rem; margin-bottom:14px;">
+        <i class="fas fa-check-circle"></i> Đưa cho tài xế quét khi lên xe
+      </div>
+      <h3 style="font-size:1.4rem; font-weight:900; margin-bottom:6px;" id="lbl-qr-voucher-name">Voucher</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:24px; line-height: 1.4;">Đưa mã này cho tài xế Bảo An để được giảm giá trực tiếp vào hóa đơn chuyến đi</p>
+      
+      <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; padding:20px; border-radius:24px; display:inline-block; margin-bottom:10px;">
+        <canvas id="qr-canvas" style="width: 160px; height: 160px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM SHEET: ACTIVATION MODAL -->
+  <div class="bottom-sheet" id="sheet-activate-voucher">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">Xác Thực Kích Hoạt</div>
+      <button class="sheet-close-btn" onclick="closeBottomSheet('sheet-activate-voucher')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div>
+      <div style="width:52px; height:52px; border-radius:16px; background:#DBEAFE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:14px;">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:18px;">
+        Vui lòng nhập số Zalo của bạn để nhà xe Bảo An ghi nhận và kích hoạt ưu đãi này vào ví tài khoản của bạn.
+      </p>
+      <div class="phone-input-group">
+        <input type="tel" id="inp-activate-zalo" placeholder="Nhập số Zalo nhận vé..." oninput="cleanPhoneInput('inp-activate-zalo')">
+        <i class="fab fa-whatsapp" style="font-size: 18px;"></i>
+      </div>
+      <button onclick="submitVoucherActivation()" class="btn-booking-submit" style="background:#2563EB; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
+        <i class="fas fa-check"></i> XÁC NHẬN KÍCH HOẠT
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTTOM SHEET: CARPOOL REGISTRATION (CHỌN GHẾ / ĐẶT CHỖ) -->
+  <div class="bottom-sheet" id="sheet-carpool-booking">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">Đăng Ký Chuyến Ghép</div>
+      <button class="sheet-close-btn" onclick="closeBottomSheet('sheet-carpool-booking')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <!-- Summary -->
+    <div class="trip-summary-box" id="lbl-carpool-summary">
+      <!-- Route details -->
+    </div>
+
+    <!-- Seat Selector Map (Atadi/Green SM style) -->
+    <div class="seat-map-wrapper">
+      <div class="seat-map-title">Chọn Chỗ Ngồi (VinFast VF5)</div>
+      
+      <div class="seat-grid" id="carpool-seat-grid">
+        <!-- Render seat elements -->
+      </div>
+
+      <div class="seat-legend">
+        <div class="legend-item">
+          <div class="legend-box vacant" style="border: 2px solid rgba(5, 150, 105, 0.2); background: var(--primary-soft);"></div>
+          <span>Trống</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box selected" style="background: var(--primary);"></div>
+          <span>Chọn</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box taken" style="background: #F1F5F9;"></div>
+          <span>Đã đặt</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seat Count Counter -->
+    <div class="km-counter-box" style="margin-bottom:16px; padding:12px 16px;">
+      <div class="km-lbl" style="font-size:0.9rem;"><i class="fas fa-user-plus" style="color: var(--primary); margin-right: 6px;"></i> Số lượng hành khách</div>
+      <div class="km-input-wrapper">
+        <div class="btn-km-step" style="width:30px; height:30px;" onclick="adjustCarpoolSeats(-1)">-</div>
+        <input type="number" id="inp-carpool-seats-count" value="1" min="1" max="4" readonly style="font-size:1.1rem; width:40px;">
+        <div class="btn-km-step" style="width:30px; height:30px;" onclick="adjustCarpoolSeats(1)">+</div>
+      </div>
+    </div>
+
+    <!-- Segment Price Match Picker -->
+    <div class="segment-picker">
+      <label>Chọn chặng di chuyển thực tế</label>
+      <div class="segment-select-display" onclick="toggleSegmentMenu()">
+        <span id="lbl-segment-display-route">Chọn chặng...</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="segment-menu" id="carpool-segment-menu">
+        <!-- Segments options loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- Details forms -->
+    <div class="detail-address-group" style="gap:10px; margin-bottom:16px;">
+      <input type="text" id="inp-carpool-name" placeholder="Họ và tên của bạn...">
+      <input type="tel" id="inp-carpool-phone" placeholder="Số điện thoại liên hệ..." oninput="cleanPhoneInput('inp-carpool-phone')">
+      <input type="text" id="inp-carpool-pickup-address" placeholder="Nhập địa chỉ đón cụ thể (Số nhà, tên đường...)">
+    </div>
+
+    <!-- Price summary & Confirm Button -->
+    <button class="btn-booking-submit" onclick="submitCarpoolBooking()">
+      <i class="fas fa-check-circle"></i> ĐỒNG Ý GIỮ CHỖ
+    </button>
+  </div>
+
+  <!-- APPLICATION CODE -->
+  <script>
+    // ── DATABASE / SHEETS / API CONFIGURATION ──
+    const BOOKING_API_URL = "https://script.google.com/macros/s/AKfycbwkkVi6nJcZjEVLJcLy41OjcRn9qK8apn_Shj81b6k4-XrBuCt8yXGwkoqwm_ngXVU-Nw/exec";
+    const VOUCHER_API_URL = "https://script.google.com/macros/s/AKfycbyqT_KUHv1xfn5OaHkh-74XppiCvEyPpdItfh2diZWf1Yg5GVK345GyqzHloxqajtww/exec";
+
+    // ── GLOBAL APPLICATION STATE ──
+    let activeBookingTab = 'bao-chuyen';
+    let tripMode = 'one'; // 'one' (một chiều) | 'round' (khứ hồi)
+    let selectedPickup = 'Đam Rông';
+    let selectedDropoff = 'Đà Lạt';
+
+    // Voucher state
+    let walletActiveTab = 'ACTIVE';
+    let verifiedPhone = '';
+    let voucherData = null;
+    let selectedRowIdToActivate = null;
+    let countdownIntervals = [];
+
+    // Carpool state
+    let carpoolRawData = [];
+    let selectedDate = '';
+    let selectedCarpoolTrip = null; // object of active carpool card
+    let selectedSeatNumber = null; // number from seat map
+    let carpoolSegmentRoute = ''; // matched segments
+    let carpoolSegmentPrice = 0; // price of selected segment
+
+    // ── POPULAR DISTANCES LOOKUP TABLE ──
+    const POPULAR_DISTANCES = {
+      "đam rông-đà lạt": 80,
+      "đà lạt-đam rông": 80,
+      "đam rông-lâm hà": 35,
+      "lâm hà-đam rông": 35,
+      "đam rông-đức trọng": 55,
+      "đức trọng-đam rông": 55,
+      "đam rông-sân bay liên khương": 65,
+      "sân bay liên khương-đam rông": 65,
+      "đam rông-sb liên khương": 65,
+      "sb liên khương-đam rông": 65,
+      "đam rông-nha trang": 210,
+      "nha trang-đam rông": 210,
+      "đam rông-sân bay cam ranh": 230,
+      "sân bay cam ranh-đam rông": 230,
+      "đam rông-sb cam ranh": 230,
+      "sb cam ranh-đam rông": 230,
+      "đam rông-sân bay buôn ma thuột": 120,
+      "sân bay buôn ma thuột-đam rông": 120,
+      "đam rông-sb buôn ma thuột": 120,
+      "sb buôn ma thuột-đam rông": 120,
+      "đam rông-phan thiết": 240,
+      "phan thiết-đam rông": 240,
+      
+      "đà lạt-lâm hà": 45,
+      "lâm hà-đà lạt": 45,
+      "đà lạt-đức trọng": 30,
+      "đức trọng-đà lạt": 30,
+      "đà lạt-sân bay liên khương": 30,
+      "sân bay liên khương-đà lạt": 30,
+      "đà lạt-sb liên khương": 30,
+      "sb liên khương-đà lạt": 30,
+      "đà lạt-nha trang": 140,
+      "nha trang-đà lạt": 140,
+      "đà lạt-sân bay cam ranh": 160,
+      "sân bay cam ranh-đà lạt": 160,
+      "đà lạt-sb cam ranh": 160,
+      "sb cam ranh-đà lạt": 160,
+      "đà lạt-phan thiết": 160,
+      "phan thiết-đà lạt": 160,
+      "đà lạt-sân bay buôn ma thuột": 160,
+      "sân bay buôn ma thuột-đà lạt": 160,
+      "đà lạt-sb buôn ma thuột": 160,
+      "sb buôn ma thuột-đà lạt": 160
+    };
+
+    // ── FIXED LOCATION DICTIONARY ──
+    const FIXED_LOCATIONS = [
+      "Đam Rông", "Lâm Hà", "Đức Trọng", "Đà Lạt", 
+      "Sân bay Liên Khương", "Sân bay Cam Ranh", "Sân bay Buôn Ma Thuột", 
+      "Nha Trang", "Phan Thiết"
+    ];
+
+    // ── PRICING TIERS (MATCHING PRODUCTION v11.3.6) ──
+    const PRICE_TIERS = [
+      { maxKm: 30,  baoanRate: 9000,  marketRate: 14000 },
+      { maxKm: 80,  baoanRate: 8500,  marketRate: 13000 },
+      { maxKm: 150, baoanRate: 8000,  marketRate: 12000 },
+      { maxKm: 250, baoanRate: 7500,  marketRate: 11500 },
+      { maxKm: 9999,baoanRate: 7000,  marketRate: 11000 }
+    ];
+
+    // ── FALLBACK CARPOOL MOCK DATA ──
+    const MOCK_TRIPS = [
+      { "ID": "CG001", "Ngay": "Thứ Hai, 08/06", "Gio": "08:00", "TuyenDuong": "Đam Rông ➡️ Đà Lạt", "GiaGhep": "250k", "SoGheTrong": "3", "LoaiXe": "VinFast VF5", "TrangThai": "Đang chạy" },
+      { "ID": "CG002", "Ngay": "Thứ Hai, 08/06", "Gio": "14:30", "TuyenDuong": "Đà Lạt ➡️ Đam Rông", "GiaGhep": "250k", "SoGheTrong": "2", "LoaiXe": "VinFast VF5", "TrangThai": "Đang chạy" },
+      { "ID": "CG003", "Ngay": "Thứ Ba, 09/06", "Gio": "09:00", "TuyenDuong": "Đam Rông ➡️ Đà Lạt", "GiaGhep": "250k", "SoGheTrong": "4", "LoaiXe": "VinFast VF5", "TrangThai": "Đang chạy" },
+      { "ID": "CG004", "Ngay": "Thứ Ba, 09/06", "Gio": "16:00", "TuyenDuong": "Đà Lạt ➡️ Đam Rông", "GiaGhep": "250k", "SoGheTrong": "1", "LoaiXe": "VinFast VF5", "TrangThai": "Đang chạy" }
+    ];
+
+    // ── INITIALIZATION ──
+    document.addEventListener("DOMContentLoaded", () => {
+      initCarousel();
+      setDefaultDatetime();
+      calculateBaoChuyenPrice();
+      fetchCarpoolData();
+    });
+
+    // ── CAROUSEL CONTROLLER ──
+    function initCarousel() {
+      const carousel = document.getElementById("hero-carousel");
+      const indicators = document.querySelectorAll(".indicator-dot");
+      
+      carousel.addEventListener("scroll", () => {
+        const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+        indicators.forEach((dot, idx) => {
+          if (idx === index) dot.classList.add("active");
+          else dot.classList.remove("active");
+        });
+      });
+
+      // Auto rotation every 6s unless manually interacted
+      let autoRotate = setInterval(() => {
+        let nextIndex = (Math.round(carousel.scrollLeft / carousel.offsetWidth) + 1) % 3;
+        carousel.scrollTo({
+          left: nextIndex * carousel.offsetWidth,
+          behavior: 'smooth'
+        });
+      }, 6000);
+
+      carousel.addEventListener("touchstart", () => {
+        clearInterval(autoRotate);
+      });
+    }
+
+    function scrollToBookingTab(type) {
+      document.getElementById("booking-section").scrollIntoView({ behavior: 'smooth' });
+      switchBookingTab(type);
+    }
+
+    // Set default pickup datetime (current + 2 hours)
+    function setDefaultDatetime() {
+      const now = new Date();
+      now.setHours(now.getHours() + 2);
+      now.setMinutes(0);
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      
+      document.getElementById("inp-bao-chuyen-datetime").value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    // Input sanitizer
+    function cleanPhoneInput(elementId) {
+      const input = document.getElementById(elementId);
+      input.value = input.value.replace(/[^0-9]/g, '');
+    }
+
+    // ── TẦNG 2: VOUCHER ENGINE ──
+    async function handleVoucherAction(actionType) {
+      const phone = document.getElementById("inp-voucher-phone").value.trim();
+      if (phone.length < 9) {
+        Swal.fire({ icon: 'warning', title: 'Thiếu số điện thoại', text: 'Vui lòng nhập số điện thoại hợp lệ để truy xuất ví quà tặng!', confirmButtonColor: '#059669' });
+        return;
+      }
+
+      // Show loader
+      Swal.fire({
+        title: 'Đang kết nối hệ thống...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+
+      try {
+        const url = new URL(VOUCHER_API_URL);
+        url.searchParams.append('action', 'checkWinner');
+        url.searchParams.append('phone', phone);
+        url.searchParams.append('actionType', actionType);
+
+        const response = await fetch(url.toString());
+        if (!response.ok) throw new Error("CORS or Server Error");
+        
+        const data = await response.json();
+        Swal.close();
+
+        if (data.found === false) {
+          Swal.fire({ icon: 'info', title: 'Thông báo', text: data.message || "Không tìm thấy dữ liệu.", confirmButtonColor: '#059669' });
+          return;
+        }
+
+        // Save verified details
+        verifiedPhone = phone;
+        voucherData = data;
+        
+        // Sync phone inputs to Booking Layer 3
+        document.getElementById("inp-bao-chuyen-phone").value = phone;
+        document.getElementById("inp-carpool-phone").value = phone;
+
+        // Render user wallet
+        document.getElementById("lbl-wallet-user").innerText = data.name || "Khách Hàng";
+        document.getElementById("wallet-box").style.display = "block";
+        document.getElementById("wallet-box").scrollIntoView({ behavior: 'smooth' });
+
+        if (actionType === 'SPIN') {
+          if (data.type === 'EXISTING') {
+            Swal.fire({ icon: 'info', title: 'SĐT đã tham gia', text: 'SĐT này đã có vé trên hệ thống. Chúng tôi đã mở ví voucher bên dưới!', confirmButtonColor: '#059669' });
+            renderVouchers();
+          } else {
+            // New user gets spin wheel!
+            showSpinWheelModal(data);
+          }
+        } else {
+          renderVouchers();
+        }
+      } catch (error) {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối đến hệ thống voucher. Vui lòng thử lại sau!', confirmButtonColor: '#EF4444' });
+      }
+    }
+
+    function showSpinWheelModal(resData) {
+      Swal.fire({
+        title: '🎰 VÒNG QUAY MAY MẮN',
+        html: `
+          <div class="wheel-modal-body">
+            <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">Bạn có 1 lượt quay Chào Bạn Mới!</div>
+            <div class="wheel-container">
+              <div class="wheel-pointer"></div>
+              <canvas class="wheel-canvas" id="wheel-cvs" width="220" height="220"></canvas>
+            </div>
+            <button class="btn-spin-action" id="btn-modal-spin-start" style="width:180px;">QUAY NGAY</button>
+          </div>
+        `,
+        showConfirmButton: false,
+        showCloseButton: true,
+        allowOutsideClick: false,
+        didOpen: () => {
+          const cvs = document.getElementById("wheel-cvs");
+          const ctx = cvs.getContext("2d");
+          const prizes = ["10.000đ", "Cảm ơn", "20.000đ", "Cảm ơn", "50.000đ", "Cảm ơn", "Thêm lượt", "Cảm ơn"];
+          const colors = ["#FF5252", "#FFFFFF", "#2196F3", "#FFFFFF", "#4CAF50", "#FFFFFF", "#FFC107", "#FFFFFF"];
+          
+          function drawWheel() {
+            const arc = Math.PI / 4;
+            for (let i = 0; i < 8; i++) {
+              const angle = i * arc;
+              ctx.fillStyle = colors[i];
+              ctx.beginPath();
+              ctx.arc(110, 110, 100, angle, angle + arc, false);
+              ctx.lineTo(110, 110);
+              ctx.fill();
+              
+              // Text
+              ctx.save();
+              ctx.fillStyle = colors[i] === "#FFFFFF" ? "#1E293B" : "#FFFFFF";
+              ctx.font = "bold 12px 'Plus Jakarta Sans'";
+              ctx.translate(110, 110);
+              ctx.rotate(angle + arc / 2);
+              ctx.textAlign = "right";
+              ctx.fillText(prizes[i], 90, 4);
+              ctx.restore();
+            }
+          }
+          drawWheel();
+
+          document.getElementById("btn-modal-spin-start").onclick = () => {
+            document.getElementById("btn-modal-spin-start").disabled = true;
+            document.getElementById("btn-modal-spin-start").innerText = "Đang quay...";
+            
+            const randomSector = 4; // Force 50K prize or let it spin matching resData.vouchers[0].prize
+            const spins = 5;
+            const degrees = spins * 360 + (randomSector * 45) + 22.5;
+            cvs.style.transform = `rotate(${degrees}deg)`;
+            
+            setTimeout(() => {
+              Swal.close();
+              Swal.fire({
+                icon: 'success',
+                title: 'Chúc mừng!',
+                text: `Bạn đã quay trúng: ${resData.vouchers[0].prize}! Vé đã được nạp vào ví voucher bên dưới.`,
+                confirmButtonColor: '#059669'
+              }).then(() => {
+                renderVouchers();
+              });
+            }, 4200);
+          };
+        }
+      });
+    }
+
+    function switchWalletTab(tab) {
+      walletActiveTab = tab;
+      document.querySelectorAll(".wallet-tab").forEach(t => t.classList.remove("active"));
+      document.getElementById(`tab-wallet-${tab.toLowerCase()}`).classList.add("active");
+      renderVouchers();
+    }
+
+    function renderVouchers() {
+      const container = document.getElementById("voucher-list-container");
+      container.innerHTML = "";
+      
+      // Stop old timers
+      countdownIntervals.forEach(clearInterval);
+      countdownIntervals = [];
+
+      if (!voucherData || !voucherData.vouchers || voucherData.vouchers.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p style="font-size:0.8rem;">Ví của bạn chưa có vé nào</p></div>`;
+        return;
+      }
+
+      const now = Date.now();
+      const filtered = voucherData.vouchers.filter(v => {
+        const expTime = new Date(v.expiry).getTime();
+        const isExpired = expTime < now;
+        const isUsed = v.status === 'Đã đi' || v.status === 'Đã sử dụng';
+
+        if (walletActiveTab === 'USED') return isUsed;
+        if (walletActiveTab === 'EXPIRED') return !isUsed && isExpired;
+        return !isUsed && !isExpired; // ACTIVE
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-ticket-alt"></i><p style="font-size:0.8rem;">Không có vé trong mục này</p></div>`;
+        return;
+      }
+
+      filtered.forEach((v, index) => {
+        let badgeClass = 'badge-new';
+        let statusTxt = v.status;
+        let actionBtn = '';
+        let timerHtml = '';
+        let isThemeGold = false;
+
+        if (walletActiveTab === 'ACTIVE') {
+          isThemeGold = true;
+          const timerId = `voucher-timer-${index}`;
+          timerHtml = `<div class="voucher-countdown" id="${timerId}">Hạn dùng: Đang tính...</div>`;
+          startVoucherTimer(v.expiry, timerId);
+
+          if (v.status === 'Mới tạo') {
+            badgeClass = 'badge-new';
+            statusTxt = 'Chưa kích hoạt';
+            actionBtn = `<button onclick="openActivationSheet(${v.rowId})" class="btn-voucher-action activate">Kích Hoạt</button>`;
+          } else if (v.status === 'Chờ duyệt') {
+            badgeClass = 'badge-pending';
+            statusTxt = 'Chờ duyệt';
+            actionBtn = `<div style="font-size:0.85rem; color:#2563EB; font-weight:700;"><i class="fas fa-spinner fa-spin mr-1"></i>Đang duyệt...</div>`;
+          } else if (v.status === 'Đã nhận' || v.status === 'Chưa sử dụng') {
+            badgeClass = 'badge-ready';
+            statusTxt = 'Sẵn sàng';
+            actionBtn = `<button onclick="openQrSheet('${v.prize}')" class="btn-voucher-action use">Dùng Ngay</button>`;
+          }
+        } else {
+          statusTxt = walletActiveTab === 'USED' ? 'Đã sử dụng' : 'Hết hạn';
+          badgeClass = 'badge-pending';
+        }
+
+        const card = document.createElement("div");
+        card.className = `voucher-item ${isThemeGold ? 'active-theme' : 'used-expired'}`;
+        card.innerHTML = `
+          <div class="voucher-row">
+            <div class="voucher-icon">🎫</div>
+            <div class="voucher-info">
+              <div class="voucher-name">${v.prize}</div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="voucher-badge ${badgeClass}">${statusTxt}</span>
+              </div>
+              ${timerHtml}
+            </div>
+          </div>
+          ${actionBtn ? `<div class="voucher-action-row">${actionBtn}</div>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function startVoucherTimer(expiryStr, elementId) {
+      const expDate = new Date(expiryStr).getTime();
+      const x = setInterval(() => {
+        const now = Date.now();
+        const diff = expDate - now;
+        const el = document.getElementById(elementId);
+        if (!el) {
+          clearInterval(x);
+          return;
+        }
+
+        if (diff <= 0) {
+          clearInterval(x);
+          el.innerHTML = "ĐÃ HẾT HẠN SỬ DỤNG";
+          return;
+        }
+
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        el.innerHTML = `⏳ Còn: ${d}n ${h}g ${m}p <span style="color:var(--danger); font-weight:800;">${s}s</span>`;
+      }, 1000);
+      countdownIntervals.push(x);
+    }
+
+    // ── VOUCHER ACTIONS (ACTIVATION & QR CODE) ──
+    function openActivationSheet(rowId) {
+      selectedRowIdToActivate = rowId;
+      document.getElementById("inp-activate-zalo").value = verifiedPhone;
+      openBottomSheet("sheet-activate-voucher");
+    }
+
+    async function submitVoucherActivation() {
+      const zalo = document.getElementById("inp-activate-zalo").value.trim();
+      if (!zalo) {
+        Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập số Zalo để xác thực kích hoạt voucher!', confirmButtonColor: '#059669' });
+        return;
+      }
+
+      closeBottomSheet("sheet-activate-voucher");
+      Swal.fire({ title: 'Đang gửi yêu cầu...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      try {
+        const url = new URL(VOUCHER_API_URL);
+        url.searchParams.append('action', 'activateVoucher');
+        url.searchParams.append('rowId', selectedRowIdToActivate);
+        url.searchParams.append('zalo', zalo);
+        url.searchParams.append('phone', verifiedPhone);
+
+        const res = await fetch(url.toString());
+        const data = await res.json();
+        
+        Swal.close();
+        if (data.success) {
+          Swal.fire({ icon: 'success', title: 'Gửi thành công!', text: 'Yêu cầu kích hoạt đã được gửi lên hệ thống. Quý khách vui lòng kiểm tra lại ví sau ít phút.', confirmButtonColor: '#059669' });
+          // Update status locally in state
+          const v = voucherData.vouchers.find(x => x.rowId === selectedRowIdToActivate);
+          if (v) v.status = 'Chờ duyệt';
+          renderVouchers();
+        } else {
+          throw new Error("Activation failed");
+        }
+      } catch (err) {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'Lỗi kích hoạt', text: 'Có lỗi xảy ra trong quá trình kết nối. Vui lòng liên hệ Hotline: 0915.74.50.30!', confirmButtonColor: '#EF4444' });
+      }
+    }
+
+    function openQrSheet(prizeName) {
+      document.getElementById("lbl-qr-voucher-name").innerText = prizeName;
+      const qr = new QRious({
+        element: document.getElementById("qr-canvas"),
+        size: 150,
+        level: 'H',
+        value: `BAOAN|${verifiedPhone}|${prizeName}|OK`
+      });
+      openBottomSheet("sheet-qr-code");
+    }
+
+    // ── TẦNG 3: BOOKING - TABS NAVIGATION ──
+    function switchBookingTab(tab) {
+      activeBookingTab = tab;
+      document.getElementById("tab-btn-bao-chuyen").classList.remove("active");
+      document.getElementById("tab-btn-xe-ghep").classList.remove("active");
+      
+      document.getElementById("booking-bao-chuyen-panel").style.display = "none";
+      document.getElementById("booking-xe-ghep-panel").style.display = "none";
+
+      if (tab === 'bao-chuyen') {
+        document.getElementById("tab-btn-bao-chuyen").classList.add("active");
+        document.getElementById("booking-bao-chuyen-panel").style.display = "block";
+      } else {
+        document.getElementById("tab-btn-xe-ghep").classList.add("active");
+        document.getElementById("booking-xe-ghep-panel").style.display = "block";
+        fetchCarpoolData();
+      }
+    }
+
+    // ── BAO CHUYẾN (XE RIÊNG) CONTROLLER ──
+    function setTripMode(mode) {
+      tripMode = mode;
+      document.getElementById("btn-dir-one").classList.remove("active");
+      document.getElementById("btn-dir-round").classList.remove("active");
+      
+      if (mode === 'one') document.getElementById("btn-dir-one").classList.add("active");
+      else document.getElementById("btn-dir-round").classList.add("active");
+      
+      calculateBaoChuyenPrice();
+    }
+
+    function swapLocations() {
+      const temp = selectedPickup;
+      selectedPickup = selectedDropoff;
+      selectedDropoff = temp;
+
+      document.getElementById("lbl-pickup").innerText = selectedPickup;
+      document.getElementById("lbl-dropoff").innerText = selectedDropoff;
+
+      // Rotate Swap Icon
+      const icon = document.querySelector(".btn-route-swap i");
+      icon.style.transform = (icon.style.transform === 'rotate(180deg)') ? 'rotate(0deg)' : 'rotate(180deg)';
+
+      // Auto update distance if matched
+      autoUpdateDistance();
+    }
+
+    function autoUpdateDistance() {
+      const key = `${selectedPickup.trim().toLowerCase()}-${selectedDropoff.trim().toLowerCase()}`;
+      if (POPULAR_DISTANCES[key]) {
+        document.getElementById("inp-km").value = POPULAR_DISTANCES[key];
+        calculateBaoChuyenPrice();
+      }
+    }
+
+    function adjustKm(amount) {
+      const input = document.getElementById("inp-km");
+      let val = parseInt(input.value) || 0;
+      val += amount;
+      if (val < 1) val = 1;
+      input.value = val;
+      calculateBaoChuyenPrice();
+    }
+
+    // LOCATION SHEET CONTROLLER
+    let activeLocationType = 'pickup'; // 'pickup' | 'dropoff'
+    function openLocationPicker(type) {
+      activeLocationType = type;
+      document.getElementById("location-picker-title").innerText = type === 'pickup' ? "Chọn Điểm Đón" : "Chọn Điểm Đến";
+      
+      const container = document.getElementById("location-list-container");
+      container.innerHTML = "";
+
+      FIXED_LOCATIONS.forEach(loc => {
+        // Highlight active select
+        const isSelected = (type === 'pickup' && selectedPickup === loc) || (type === 'dropoff' && selectedDropoff === loc);
+        const opt = document.createElement("div");
+        opt.className = "location-option";
+        if (isSelected) opt.style.borderColor = "var(--primary)";
+        opt.innerHTML = `
+          <i class="fas fa-location-dot"></i>
+          <span>${loc}</span>
+        `;
+        opt.onclick = () => selectLocation(loc);
+        container.appendChild(opt);
+      });
+
+      openBottomSheet("sheet-location-picker");
+    }
+
+    function selectLocation(loc) {
+      if (activeLocationType === 'pickup') {
+        selectedPickup = loc;
+        document.getElementById("lbl-pickup").innerText = loc;
+      } else {
+        selectedDropoff = loc;
+        document.getElementById("lbl-dropoff").innerText = loc;
+      }
+      closeBottomSheet("sheet-location-picker");
+      autoUpdateDistance();
+    }
+
+    // Tiered pricing matching logic (PRICE TIERS & CROSSOVER CAP)
+    function calculateBaoChuyenPrice() {
+      const km = parseFloat(document.getElementById("inp-km").value) || 0;
+      const displayPanel = document.getElementById("bao-chuyen-price-panel");
+
+      if (km <= 0) {
+        displayPanel.style.display = "none";
+        return;
+      }
+      displayPanel.style.display = "block";
+
+      let tier = PRICE_TIERS[PRICE_TIERS.length - 1];
+      let tierIdx = PRICE_TIERS.length - 1;
+      for (let i = 0; i < PRICE_TIERS.length; i++) {
+        if (km <= PRICE_TIERS[i].maxKm) {
+          tier = PRICE_TIERS[i];
+          tierIdx = i;
+          break;
+        }
+      }
+
+      let baoan = km * tier.baoanRate;
+      let market = km * tier.marketRate;
+
+      // Crossover cap limits
+      if (tierIdx > 0) {
+        const prevTier = PRICE_TIERS[tierIdx - 1];
+        const prevBaoanMax = prevTier.maxKm * prevTier.baoanRate;
+        const prevMarketMax = prevTier.maxKm * prevTier.marketRate;
+        if (baoan < prevBaoanMax) baoan = prevBaoanMax;
+        if (market < prevMarketMax) market = prevMarketMax;
+      }
+
+      // Rounding to nearest 10k
+      baoan = Math.round(baoan / 10000) * 10000;
+      market = Math.round(market / 10000) * 10000;
+      
+      const factor = (tripMode === 'round') ? 1.4 : 1;
+      const finalBaoan = baoan * factor;
+      const finalMarket = market * factor;
+      const finalSaving = finalMarket - finalBaoan;
+
+      document.getElementById("lbl-price-market").innerText = formatVND(finalMarket);
+      document.getElementById("lbl-price-baoan").innerText = formatVND(finalBaoan);
+      document.getElementById("lbl-price-saving").innerText = formatVND(finalSaving);
+    }
+
+    function formatVND(val) {
+      return Math.round(val).toLocaleString('vi-VN') + 'đ';
+    }
+
+    // Submit Bao Chuyến booking
+    async function submitBaoChuyen() {
+      const phone = document.getElementById("inp-bao-chuyen-phone").value.trim();
+      const pickupAddress = document.getElementById("inp-pickup-detail").value.trim();
+      const dropoffAddress = document.getElementById("inp-dropoff-detail").value.trim();
+      const km = document.getElementById("inp-km").value;
+      const datetime = document.getElementById("inp-bao-chuyen-datetime").value;
+
+      if (!phone) {
+        Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng điền số điện thoại liên hệ!', confirmButtonColor: '#059669' });
+        return;
+      }
+      if (!pickupAddress) {
+        Swal.fire({ icon: 'warning', title: 'Thiếu địa chỉ đón', text: 'Vui lòng điền địa chỉ đón cụ thể (Số nhà, tên đường...)!', confirmButtonColor: '#059669' });
+        return;
+      }
+      if (!datetime) {
+        Swal.fire({ icon: 'warning', title: 'Thiếu ngày giờ', text: 'Vui lòng chọn thời gian đón khách!', confirmButtonColor: '#059669' });
+        return;
+      }
+
+      Swal.fire({ title: 'Đang đặt chuyến...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const fromFull = `${selectedPickup} (${pickupAddress})`;
+      const toFull = dropoffAddress ? `${selectedDropoff} (${dropoffAddress})` : selectedDropoff;
+      const priceText = document.getElementById("lbl-price-baoan").innerText;
+
+      try {
+        const payload = {
+          action: 'save_booking',
+          phone: phone,
+          from: fromFull,
+          to: toFull,
+          km: km,
+          tripType: tripMode,
+          carType: 'VinFast VF5 (5 Chỗ)',
+          timeGo: datetime
+        };
+
+        const res = await fetch(BOOKING_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("Connection error");
+
+        // Format Zalo message to prefill chat deep link
+        const zaloMsg = `Tôi muốn đặt xe riêng BAO CHUYẾN (${tripMode === 'round' ? 'Khứ Hồi' : 'Một Chiều'}). Đón tại: ${fromFull} ➡️ Đi: ${toFull}. Ngày giờ đón: ${datetime.replace('T', ' ')}. Khoảng cách: ${km}km. Giá ước tính: ${priceText}. SĐT của tôi: ${phone}`;
+        const zaloUrl = `https://zalo.me/0915745030?text=${encodeURIComponent(zaloMsg)}`;
+
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          title: 'Đặt xe thành công!',
+          text: 'Yêu cầu của bạn đã được chuyển đến tài xế Bảo An. Chúng tôi sẽ chuyển hướng bạn qua Zalo để kết nối nhanh chóng.',
+          confirmButtonColor: '#059669'
+        }).then(() => {
+          window.open(zaloUrl, '_blank');
+        });
+      } catch (err) {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'Lỗi máy chủ', text: 'Hệ thống bận hoặc lỗi kết nối. Vui lòng đặt nhanh bằng cách gọi trực tiếp Hotline hoặc Zalo!', confirmButtonColor: '#EF4444' });
+      }
+    }
+
+    // ── XE GHÉP (SHARED RIDE) ENGINE ──
+    async function fetchCarpoolData() {
+      const syncIcon = document.getElementById("sync-icon");
+      const syncText = document.getElementById("sync-text");
+
+      // Load from LocalStorage Cache first (SWR pattern)
+      try {
+        const cache = localStorage.getItem("baoan_carpool_cache");
+        if (cache) {
+          const data = JSON.parse(cache);
+          if (data && data.length > 0) {
+            carpoolRawData = data;
+            renderCarpoolDates();
+            syncText.innerText = "Làm mới ngầm...";
+          }
+        }
+      } catch (e) {
+        console.warn("Local storage cache failed", e);
+      }
+
+      // Fetch live data
+      try {
+        syncIcon.classList.add("rotating");
+        const res = await fetch(BOOKING_API_URL + "?action=get_schedule");
+        if (!res.ok) throw new Error("API failed");
+
+        const rawData = await res.json();
+        if (rawData && rawData.length > 0) {
+          const parsed = normalizeCarpoolData(rawData);
+          carpoolRawData = parsed;
+          
+          // Save to cache
+          localStorage.setItem("baoan_carpool_cache", JSON.stringify(parsed));
+          
+          renderCarpoolDates();
+          syncIcon.classList.remove("rotating");
+          syncIcon.className = "fas fa-check-circle";
+          syncIcon.style.color = "var(--primary)";
+          syncText.innerText = "Đã đồng bộ Google Sheets";
+        } else {
+          showCarpoolEmpty();
+        }
+      } catch (err) {
+        console.warn("Live fetch failed, using fallback/cache", err);
+        syncIcon.classList.remove("rotating");
+        syncIcon.className = "fas fa-exclamation-triangle";
+        syncIcon.style.color = "orange";
+        syncText.innerText = "Chế độ đệm (Offline)";
+        
+        if (carpoolRawData.length === 0) {
+          carpoolRawData = MOCK_TRIPS;
+          renderCarpoolDates();
+        }
+      }
+    }
+
+    function normalizeCarpoolData(arr) {
+      if (!Array.isArray(arr)) return [];
+      return arr.map(raw => {
+        const getVal = (upper, pascal) => raw[upper] !== undefined ? raw[upper] : raw[pascal];
+        return {
+          ID: String(getVal('COT1', 'ID') || ''),
+          Ngay: String(getVal('NGAY', 'Ngay') || ''),
+          Gio: String(getVal('GIO', 'Gio') || ''),
+          TuyenDuong: String(getVal('TUYENDUONG', 'TuyenDuong') || ''),
+          GiaGhep: String(getVal('GIAGHEP', 'GiaGhep') || ''),
+          SoGheTrong: String(getVal('SOGHETRONG', 'SoGheTrong') || '0'),
+          LoaiXe: String(getVal('LOAIXE', 'LoaiXe') || 'VinFast VF5'),
+          TrangThai: String(getVal('TRANGTHAI', 'TrangThai') || '')
+        };
+      });
+    }
+
+    // Safe parser for dates to avoid NaN issues with multiple formats
+    function safeParseDate(dStr) {
+      if (!dStr) return new Date(0);
+      let clean = dStr.replace(/^[^\d]*,?\s*/, ''); // e.g. "Thứ Bảy, 09/05" -> "09/05"
+      const parts = clean.split('/');
+      const now = new Date();
+      const year = parts[2] ? parseInt(parts[2]) : now.getFullYear();
+      const month = parts[1] ? parseInt(parts[1]) - 1 : now.getMonth();
+      const day = parts[0] ? parseInt(parts[0]) : now.getDate();
+      return new Date(year, month, day);
+    }
+
+    function renderCarpoolDates() {
+      const container = document.getElementById("carpool-date-scroller");
+      container.innerHTML = "";
+
+      const dates = [...new Set(carpoolRawData.map(i => i.Ngay))].filter(Boolean);
+      
+      // Sort dates safely
+      dates.sort((a, b) => safeParseDate(a) - safeParseDate(b));
+
+      if (dates.length === 0) {
+        showCarpoolEmpty();
+        return;
+      }
+
+      if (!selectedDate || !dates.includes(selectedDate)) {
+        selectedDate = dates[0];
+      }
+
+      dates.forEach(d => {
+        const dateObj = safeParseDate(d);
+        const isActive = d === selectedDate;
+        
+        let dow = dateObj.toLocaleDateString('vi-VN', { weekday: 'short' }).replace('.', '');
+        // Upper case first character
+        dow = dow.charAt(0).toUpperCase() + dow.slice(1);
+        const dayNum = dateObj.getDate();
+
+        const item = document.createElement("div");
+        item.className = `date-item ${isActive ? 'active' : ''}`;
+        item.onclick = () => selectCarpoolDate(d);
+        item.innerHTML = `
+          <span class="date-item-day">${dow}</span>
+          <span class="date-item-num">${dayNum}</span>
+          <div class="date-item-dot"></div>
+        `;
+        container.appendChild(item);
+      });
+
+      renderCarpoolTrips();
+    }
+
+    function selectCarpoolDate(d) {
+      selectedDate = d;
+      document.querySelectorAll(".date-item").forEach(item => item.classList.remove("active"));
+      renderCarpoolDates();
+    }
+
+    function renderCarpoolTrips() {
+      const container = document.getElementById("carpool-trip-list");
+      container.innerHTML = "";
+
+      const filtered = carpoolRawData.filter(t => t.Ngay === selectedDate);
+      if (filtered.length === 0) {
+        showCarpoolEmpty();
+        return;
+      }
+
+      filtered.forEach(trip => {
+        const seatsLeft = parseInt(trip.SoGheTrong) || 0;
+        const isFull = seatsLeft <= 0 || trip.TrangThai === 'Hết chỗ' || trip.TrangThai === 'Đã đầy';
+        
+        // Seat dots markup
+        let dotsHtml = '';
+        const maxSeats = trip.LoaiXe.includes("7") ? 6 : 4;
+        for (let i = 0; i < maxSeats; i++) {
+          const isTaken = i >= seatsLeft;
+          dotsHtml += `<div class="seat-indicator-dot ${isTaken ? 'taken' : ''}"></div>`;
+        }
+
+        const card = document.createElement("div");
+        card.className = "trip-card";
+        card.innerHTML = `
+          <div class="trip-card-header">
+            <span class="trip-time-tag"><i class="fas fa-clock"></i> ${trip.Gio} - ${trip.Ngay}</span>
+            <span class="trip-car-tag">${trip.LoaiXe}</span>
+          </div>
+          <div class="trip-route">
+            <div class="trip-route-step"><i class="fas fa-dot-circle"></i> ${trip.TuyenDuong.split('➡️')[0]?.trim() || trip.TuyenDuong}</div>
+            <div class="trip-route-step" style="margin-top:2px;"><i class="fas fa-location-dot"></i> ${trip.TuyenDuong.split('➡️')[1]?.trim() || ''}</div>
+          </div>
+          <div class="trip-footer-row">
+            <div class="trip-price">
+              <span class="trip-price-lbl">Vé chỉ từ</span>
+              <span class="trip-price-val">${trip.GiaGhep} <span style="font-size:0.75rem; font-weight:400; color:var(--text-muted);">/ghế</span></span>
+            </div>
+            <div class="seats-badge ${isFull ? 'full' : ''}">
+              <div class="seats-dot-indicator">${dotsHtml}</div>
+              <span>${isFull ? 'Đã đầy chỗ' : `Trống ${seatsLeft} ghế`}</span>
+            </div>
+          </div>
+          <button onclick="openCarpoolBookingSheet('${btoa(unescape(encodeURIComponent(JSON.stringify(trip))))}')" class="btn-trip-book" ${isFull ? 'disabled style="background:#CBD5E1; color:#94A3B8; cursor:not-allowed;"' : ''}>
+            ${isFull ? 'HẾT CHỖ' : 'XEM CHỖ & ĐẶT VÉ'}
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function showCarpoolEmpty() {
+      const container = document.getElementById("carpool-trip-list");
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-frown"></i>
+          <p style="font-weight:700;">Không có chuyến xe ghép nào</p>
+          <p style="font-size:0.75rem; margin-top:4px;">Không tìm thấy lịch xe ghép chạy trong ngày này. Vui lòng chọn ngày khác hoặc liên hệ hotline để mở chuyến mới!</p>
+        </div>
+      `;
+    }
+
+    // ── XE GHÉP: INTERACTIVE SEAT SELECTION & SEGMENT BOOKING ──
+    function openCarpoolBookingSheet(tripB64) {
+      const trip = JSON.parse(decodeURIComponent(escape(atob(tripB64))));
+      selectedCarpoolTrip = trip;
+      selectedSeatNumber = null;
+      document.getElementById("inp-carpool-seats-count").value = 1;
+
+      // Render summary info
+      document.getElementById("lbl-carpool-summary").innerHTML = `
+        <b>Tuyến đường:</b> ${trip.TuyenDuong}<br>
+        <b>Khởi hành:</b> ${trip.Gio} • ${trip.Ngay}<br>
+        <b>Giá chặng gốc:</b> <span style="color:var(--primary); font-weight:800;">${trip.GiaGhep}</span>
+      `;
+
+      // Set default inputs
+      document.getElementById("inp-carpool-name").value = "";
+      document.getElementById("inp-carpool-pickup-address").value = "";
+      document.getElementById("inp-carpool-phone").value = verifiedPhone;
+
+      // Populate Route Segments Dropdown matching route direction
+      initRouteSegments(trip.TuyenDuong, trip.GiaGhep);
+
+      // Render seat grid VF5
+      renderSeatGrid(parseInt(trip.SoGheTrong));
+
+      openBottomSheet("sheet-carpool-booking");
+    }
+
+    // Build segments list
+    function initRouteSegments(tuyen, giaGhepGoc) {
+      const routeStr = tuyen.toLowerCase();
+      const isToDalat = routeStr.indexOf('đam rông') < routeStr.indexOf('đà lạt');
+      const isLongRoute = routeStr.includes('nha trang') || routeStr.includes('cam ranh') || routeStr.includes('phan thi') || routeStr.includes('buôn ma thuột') || routeStr.includes('bmt');
+
+      let options = [];
+      if (isLongRoute) {
+        if (routeStr.includes('nha trang')) {
+          options = [
+            { route: 'Đam Rông ➡️ Nha Trang', price: 420000 },
+            { route: 'Đà Lạt ➡️ Nha Trang', price: 350000 }
+          ];
+        } else if (routeStr.includes('cam ranh')) {
+          options = [
+            { route: 'Đam Rông ➡️ SB Cam Ranh', price: 450000 },
+            { route: 'Đà Lạt ➡️ SB Cam Ranh', price: 380000 }
+          ];
+        } else if (routeStr.includes('buôn ma thuột') || routeStr.includes('bmt')) {
+          options = [
+            { route: 'Đam Rông ➡️ SB Buôn Ma Thuột', price: 300000 },
+            { route: 'Đà Lạt ➡️ SB Buôn Ma Thuột', price: 350000 }
+          ];
+        } else if (routeStr.includes('phan thi')) {
+          options = [
+            { route: 'Đam Rông ➡️ Phan Thiết', price: 400000 },
+            { route: 'Đà Lạt ➡️ Phan Thiết', price: 450000 }
+          ];
+        }
+      } else if (isToDalat) {
+        options = [
+          { route: 'Đam Rông ➡️ Đà Lạt', price: 250000 },
+          { route: 'Đam Rông ➡️ Lâm Hà', price: 170000 },
+          { route: 'Đam Rông ➡️ Đức Trọng', price: 200000 },
+          { route: 'Đức Trọng ➡️ Đà Lạt', price: 150000 },
+          { route: 'Đam Rông ➡️ SB Liên Khương', price: 180000 },
+          { route: 'Đam Rông ➡️ SB Cam Ranh', price: 450000 },
+          { route: 'Đam Rông ➡️ SB Buôn Ma Thuột', price: 300000 }
+        ];
+      } else {
+        options = [
+          { route: 'Đà Lạt ➡️ Đam Rông', price: 250000 },
+          { route: 'Đà Lạt ➡️ Đức Trọng', price: 150000 },
+          { route: 'Đức Trọng ➡️ Đam Rông', price: 200000 },
+          { route: 'Lâm Hà ➡️ Đam Rông', price: 170000 },
+          { route: 'SB Liên Khương ➡️ Đam Rông', price: 180000 },
+          { route: 'SB Cam Ranh ➡️ Đam Rông', price: 450000 },
+          { route: 'SB Buôn Ma Thuột ➡️ Đam Rông', price: 300000 },
+          { route: 'SB Liên Khương ➡️ Đà Lạt', price: 200000 }
+        ];
+      }
+
+      // Populate dropdown menu
+      const menu = document.getElementById("carpool-segment-menu");
+      menu.innerHTML = "";
+
+      options.forEach((opt, idx) => {
+        const item = document.createElement("div");
+        item.className = `segment-option ${idx === 0 ? 'selected' : ''}`;
+        item.onclick = () => selectSegmentOption(opt.route, opt.price);
+        item.innerHTML = `
+          <span>${opt.route}</span>
+          <span class="segment-price">${opt.price / 1000}k</span>
+        `;
+        menu.appendChild(item);
+      });
+
+      // Default select the first segment
+      selectSegmentOption(options[0].route, options[0].price);
+    }
+
+    // Toggle dropdown segment picker menu
+    function toggleSegmentMenu() {
+      const menu = document.getElementById("carpool-segment-menu");
+      const isVisible = menu.style.display === "flex";
+      menu.style.display = isVisible ? "none" : "flex";
+    }
+
+    function selectSegmentOption(route, price) {
+      carpoolSegmentRoute = route;
+      carpoolSegmentPrice = price;
+
+      document.getElementById("lbl-segment-display-route").innerHTML = `
+        ${route} <span class="segment-price" style="margin-left:auto; background:var(--primary); color:#fff;">${price / 1000}k</span>
+      `;
+      document.getElementById("carpool-segment-menu").style.display = "none";
+      
+      // Update selected options highlight
+      document.querySelectorAll(".segment-option").forEach(el => {
+        if (el.innerText.includes(route)) el.classList.add("selected");
+        else el.classList.remove("selected");
+      });
+    }
+
+    // Render seats inside VF5 (Front + Back rows)
+    function renderSeatGrid(seatsAvailable) {
+      const grid = document.getElementById("carpool-seat-grid");
+      grid.innerHTML = "";
+
+      // 1. Driver icon (disabled)
+      const driver = document.createElement("div");
+      driver.className = "seat-item driver";
+      driver.innerHTML = `<i class="fas fa-dharmachakra"></i>`;
+      grid.appendChild(driver);
+
+      // 2. Front Seat 1
+      const s1 = seatsAvailable >= 4 ? 'vacant' : 'taken';
+      grid.appendChild(createSeatNode(1, s1));
+
+      // 3. Back row seats 2, 3, 4
+      const s2 = seatsAvailable >= 3 ? 'vacant' : 'taken';
+      const s3 = seatsAvailable >= 2 ? 'vacant' : 'taken';
+      const s4 = seatsAvailable >= 1 ? 'vacant' : 'taken';
+
+      grid.appendChild(createSeatNode(2, s2));
+      grid.appendChild(createSeatNode(3, s3));
+      grid.appendChild(createSeatNode(4, s4));
+      // Empty slot to align back row properly in grid
+      const placeholder = document.createElement("div");
+      grid.appendChild(placeholder);
+    }
+
+    function createSeatNode(num, status) {
+      const node = document.createElement("div");
+      node.className = `seat-item ${status}`;
+      node.id = `seat-node-${num}`;
+      node.innerText = num;
+      if (status === 'vacant') {
+        node.onclick = () => selectSeat(num);
+      }
+      return node;
+    }
+
+    function selectSeat(num) {
+      selectedSeatNumber = num;
+      // Reset vacant seat nodes
+      document.querySelectorAll(".seat-item.vacant, .seat-item.selected").forEach(el => {
+        el.className = "seat-item vacant";
+      });
+      // Set active select
+      const activeNode = document.getElementById(`seat-node-${num}`);
+      if (activeNode) activeNode.className = "seat-item selected";
+    }
+
+    function adjustCarpoolSeats(amount) {
+      const input = document.getElementById("inp-carpool-seats-count");
+      let val = parseInt(input.value) || 1;
+      val += amount;
+      if (val < 1) val = 1;
+      if (val > 4) val = 4;
+      input.value = val;
+    }
+
+    // Submit carpool booking registration
+    async function submitCarpoolBooking() {
+      if (!selectedSeatNumber) {
+        Swal.fire({ icon: 'warning', title: 'Chưa chọn chỗ', text: 'Vui lòng click chọn số ghế ngồi trên sơ đồ xe!', confirmButtonColor: '#059669' });
+        return;
+      }
+
+      const name = document.getElementById("inp-carpool-name").value.trim();
+      const phone = document.getElementById("inp-carpool-phone").value.trim();
+      const pickupDetail = document.getElementById("inp-carpool-pickup-address").value.trim();
+
+      if (!name || !phone) {
+        Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng điền họ tên và số điện thoại liên hệ!', confirmButtonColor: '#059669' });
+        return;
+      }
+      if (!pickupDetail) {
+        Swal.fire({ icon: 'warning', title: 'Thiếu điểm đón', text: 'Vui lòng nhập địa chỉ đón cụ thể của bạn!', confirmButtonColor: '#059669' });
+        return;
+      }
+
+      closeBottomSheet("sheet-carpool-booking");
+      Swal.fire({ title: 'Đang gửi đăng ký...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const priceStr = formatVND(carpoolSegmentPrice);
+      const seatsCount = document.getElementById("inp-carpool-seats-count").value;
+
+      try {
+        const payload = {
+          action: 'save_carpool',
+          id: selectedCarpoolTrip.ID,
+          route: carpoolSegmentRoute,
+          date: selectedCarpoolTrip.Ngay,
+          time: selectedCarpoolTrip.Gio,
+          price: priceStr,
+          name: name,
+          phone: phone,
+          pickup: pickupDetail,
+          seatNumber: `${selectedSeatNumber} (${seatsCount} khách)`
+        };
+
+        const res = await fetch(BOOKING_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("API failed");
+
+        // Format Zalo redirection text
+        const zaloMsg = `Tôi muốn đăng ký ghế số ${selectedSeatNumber} (${seatsCount} khách) chuyến xe ghép: ${carpoolSegmentRoute} chạy ngày ${selectedCarpoolTrip.Ngay} lúc ${selectedCarpoolTrip.Gio}. Điểm đón: ${pickupDetail}. Tên của tôi: ${name}, SĐT: ${phone}`;
+        const zaloUrl = `https://zalo.me/0915745030?text=${encodeURIComponent(zaloMsg)}`;
+
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          title: 'Đăng ký thành công!',
+          text: 'Vui lòng trao đổi thêm chi tiết chuyến đi cùng tài xế Bảo An qua ứng dụng Zalo.',
+          confirmButtonColor: '#059669'
+        }).then(() => {
+          window.open(zaloUrl, '_blank');
+        });
+      } catch (err) {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'Lỗi gửi yêu cầu', text: 'Có lỗi kết nối máy chủ xảy ra. Vui lòng gọi trực tiếp Hotline hoặc nhắn Zalo để đặt chuyến nhanh!', confirmButtonColor: '#EF4444' });
+      }
+    }
+
+    // ── BOTTOM SHEET ENGINE CONTROLS ──
+    function openBottomSheet(sheetId) {
+      document.getElementById("sheet-overlay").classList.add("open");
+      document.getElementById(sheetId).classList.add("open");
+      // Hide floating buttons to avoid overlay overlap
+      document.querySelector(".fab-container").style.display = "none";
+    }
+
+    function closeBottomSheet(sheetId) {
+      document.getElementById(sheetId).classList.remove("open");
+      // Check if any other bottom sheets are open before closing overlay
+      const openSheets = document.querySelectorAll(".bottom-sheet.open");
+      if (openSheets.length === 0) {
+        document.getElementById("sheet-overlay").classList.remove("open");
+        document.querySelector(".fab-container").style.display = "flex";
+      }
+    }
+
+    function closeAllBottomSheets() {
+      document.querySelectorAll(".bottom-sheet").forEach(sheet => {
+        sheet.classList.remove("open");
+      });
+      document.getElementById("sheet-overlay").classList.remove("open");
+      document.querySelector(".fab-container").style.display = "flex";
+      
+      // Close segments dropdown if open
+      const menu = document.getElementById("carpool-segment-menu");
+      if (menu) menu.style.display = "none";
+    }
+
+    // Auto click out handler for segment menu picker
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest('.segment-picker')) {
+        const menu = document.getElementById("carpool-segment-menu");
+        if (menu) menu.style.display = "none";
+      }
+    });
+  </script>
+
+</body>
+</html>

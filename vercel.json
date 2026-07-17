@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/index_demo.html", "dest": "/index_demo.html" },
+    { "src": "/demo.html", "dest": "/demo.html" },
+    { "src": "/private_theme_gold_9x2s8q.html", "dest": "/private_theme_gold_9x2s8q.html" },
+    { "src": "/private_theme_slate_7f3w1k.html", "dest": "/private_theme_slate_7f3w1k.html" },
+    { "src": "/private_theme_emerald_4z8v9y.html", "dest": "/private_theme_emerald_4z8v9y.html" },
+    { "src": "/v2.html", "dest": "/v2.html" },
+    { "src": "/v2", "dest": "/v2.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "ALLOWALL" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ]
+}
